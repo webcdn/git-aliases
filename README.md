@@ -1,170 +1,267 @@
-# Git Aliases ![git-aliases](https://img.shields.io/badge/version-v0.38.0-yellow.svg)
+# Git Aliases ![v0.0.1-beta](https://img.shields.io/static/v1?style=flat-square&label=version&message=v1.0-beta&color=blue)
+
 
 ## About
 git_aliases provide short-hands for [git](https://git-scm.com). Immensely are the functions written for saving the time of each developer. `git` works on any POSIX-compliant shell (sh, dash, ksh, zsh, bash), in particular on these platforms: unix, macOS, and windows WSL.
 
-## Installation and Removal
 
+## Prerequisite
+Only works with `git`, please be sure it should be installed on the machine.
+```sh
+apt install git
+```
+
+
+## Installation
 ### Install & Update Script
 
-To **install** or **update**, you should run the [install script][2]. To do that, you may either download and run the script manually, or use the following cURL or Wget command:
+To **install** or **update**, you should run the install script. To do that, you may either download and run the script manually or use the following cURL or wget command:
 ```sh
-curl -o- https://raw.githubusercontent.com/webcdn/git-aliases/v0.0.1/install.sh | bash
+curl -o- https://raw.githubusercontent.com/webcdn/git-aliases/v1.0-beta/install.sh | bash
 ```
 ```sh
-wget -qO- https://raw.githubusercontent.com/webcdn/git-aliases/v0.0.1/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/webcdn/git-aliases/v1.0-beta/install.sh | bash
 ```
-
 Running either of the above commands downloads a script and runs it. The script downloads the script to `$HOME` generally at `~/`, and attempts to add the source lines from the snippet below to the correct profile file (`~/.bash_profile`, `~/.zshrc`, `~/.profile`, or `~/.bashrc`).
-
-```sh
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-```
 
 #### Additional Notes
 
-- If the environment variable `$XDG_CONFIG_HOME` is present, it will place the `.git_aliases` file there.</sub>
+- If the environment variable `$XDG_CONFIG_HOME` is present, it will place the `.git_aliases` file there.
 
 - You can customize the install source, directory, profile, and version using the `XYZ_SOURCE`, `XYZ_DIR`, `PROFILE`, and `NODE_VERSION` variables.
 Eg: `curl ... | NVM_DIR="path/to/git-aliases"`. Ensure that the `NVM_DIR` does not contain a trailing slash.
 
 - The installer can use, `curl`, or `wget` to download `.git_aliases`, whichever is available.
 
-#### Troubleshooting on Linux
-
-On Linux, after running the install script, if you get `nvm: command not found` or see no feedback from your terminal after you type `command -v nvm`, simply close your current terminal, open a new terminal, and try verifying again.
-Alternatively, you can run run the following commands for the different shells on the command line:
-
-*bash*: `source ~/.bashrc`
-
-*zsh*: `source ~/.zshrc`
-
-*ksh*: `. ~/.profile`
-
-These should pick up the `nvm` command.
-
-#### Troubleshooting on macOS
-
-Since OS X 10.9, `/usr/bin/git` has been preset by Xcode command line tools, which means we can't properly detect if Git is installed or not. You need to manually install the Xcode command line tools before running the install script, otherwise, it'll fail. (see [#1782](https://github.com/nvm-sh/nvm/issues/1782))
-
-If you get `nvm: command not found` after running the install script, one of the following might be the reason:
-
-  - Since macOS 10.15, the default shell is `zsh` and nvm will look for `.zshrc` to update, none is installed by default. Create one with `touch ~/.zshrc` and run the install script again.
-
-  - If you use bash, the previous default shell, your system may not have a `.bash_profile` file where the command is set up. Create one with `touch ~/.bash_profile` and run the install script again. Then, run `source ~/.bash_profile` to pick up the `nvm` command.
-
-  - You have previously used `bash`, but you have `zsh` installed. You need to manually add [these lines](#manual-install) to `~/.zshrc` and run `. ~/.zshrc`.
-
-  - You might need to restart your terminal instance or run `. ~/.nvm/nvm.sh`. Restarting your terminal/opening a new tab/window, or running the source command will load the command and the new configuration.
-
-  - If the above didn't help, you might need to restart your terminal instance. Try opening a new tab/window in your terminal and retry.
-
-If the above doesn't fix the problem, you may try the following:
-
-  - If you use bash, it may be that your `.bash_profile` (or `~/.profile`) does not source your `~/.bashrc` properly. You could fix this by adding `source ~/<your_profile_file>` to it or follow the next step below.
-
-  - Try adding [the snippet from the install section](#profile_snippet), that finds the correct nvm directory and loads nvm, to your usual profile (`~/.bash_profile`, `~/.zshrc`, `~/.profile`, or `~/.bashrc`).
-
 ### Verify Installation
-
-To verify that git-aliases has been installed, do:
-
+To verify that **git-aliases** has been installed, do:
 ```sh
-git-version
+git-aliases
 ```
+which should output aliases version, if the installation was successful. Please note that `which git-aliases` will not work, since all are sourced shell functions, not executable binaries.
 
-which should output aliases version, if the installation was successful. Please note that `which git-version` will not work, since its a sourced shell function, not an executable binary.
-
-### Important Notes
-
-If you're running a system without prepackaged binary available, which means you're going to install nodejs or io.js from its source code, you need to make sure your system has a C++ compiler. For OS X, Xcode will work, for Debian/Ubuntu based GNU/Linux, the `build-essential` and `libssl-dev` packages work.
-
-**Note:** `nvm` also support Windows in some cases. It should work through WSL (Windows Subsystem for Linux) depending on the version of WSL. It should also work with [GitBash](https://gitforwindows.org/) (MSYS) or [Cygwin](https://cygwin.com). Otherwise, for Windows, afew alternatives exist, which are neither supported nor developed by us:
-
-  - [nvm-windows](https://github.com/coreybutler/nvm-windows)
-  - [nodist](https://github.com/marcelklehr/nodist)
-  - [nvs](https://github.com/jasongin/nvs)
-
-**Note:** `nvm` does not support [Fish] either (see [#303](https://github.com/nvm-sh/nvm/issues/303)). Alternatives exist, which are neither supported nor developed by us:
-
-  - [bass](https://github.com/edc/bass) allows you to use utilities written for Bash in fish shell
-  - [fast-nvm-fish](https://github.com/brigand/fast-nvm-fish) only works with version numbers (not aliases) but doesn't significantly slow your shell startup
-  - [plugin-nvm](https://github.com/derekstavis/plugin-nvm) plugin for [Oh My Fish](https://github.com/oh-my-fish/oh-my-fish), which makes nvm and its completions available in fish shell
-  - [fnm](https://github.com/fisherman/fnm) - [fisherman](https://github.com/fisherman/fisherman)-based version manager for fish
-  - [fish-nvm](https://github.com/FabioAntunes/fish-nvm) - Wrapper around nvm for fish, delays sourcing nvm until it's actually used.
-
-**Note:** We still have some problems with FreeBSD, because there is no official pre-built binary for FreeBSD, and building from source may need [patches](https://www.freshports.org/www/node/files/patch-deps_v8_src_base_platform_platform-posix.cc); see the issue ticket:
-
-  - [[#900] [Bug] nodejs on FreeBSD may need to be patched](https://github.com/nvm-sh/nvm/issues/900)
-  - [nodejs/node#3716](https://github.com/nodejs/node/issues/3716)
-
-**Note:** On OS X, if you do not have Xcode installed and you do not wish to download the ~4.3GB file, you can install the `Command Line Tools`. You can check out this blog post on how to just that:
-
-  - [How to Install Command Line Tools in OS X Mavericks & Yosemite (Without Xcode)](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/)
-
-**Note:** On OS X, if you have/had a "system" node installed and want to install modules globally, keep in mind that:
-
-  - When using `nvm` you do not need `sudo` to globally install a module with `npm -g`, so instead of doing `sudo npm install -g grunt`, do instead `npm install -g grunt`
-  - If you have an `~/.npmrc` file, make sure it does not contain any `prefix` settings (which is not compatible with `nvm`)
-  - You can (but should not?) keep your previous "system" node install, but `nvm` will only be available to your user account (the one used to install nvm). This might cause version mismatches, as other users will be using `/usr/local/lib/node_modules/*` VS your user account using `~/.nvm/versions/node/vX.X.X/lib/node_modules/*`
-
-Homebrew installation is not supported. If you have issues with homebrew-installed `nvm`, please `brew uninstall` it, and install it using the instructions below, before filing an issue.
-
-**Note:** If you're using `zsh` you can easily install `nvm` as a zsh plugin. Install [`zsh-nvm`](https://github.com/lukechilds/zsh-nvm) and run `nvm upgrade` to upgrade.
-
-**Note:** Git versions before v1.7 may face a problem of cloning `nvm` source from GitHub via https protocol, and there is also different behavior of git before v1.6, and git prior to [v1.17.10](https://github.com/git/git/commit/5a7d5b683f869d3e3884a89775241afa515da9e7) can not clone tags, so the minimum required git version is v1.7.10. If you are interested in the problem we mentioned here, please refer to GitHub's [HTTPS cloning errors](https://help.github.com/articles/https-cloning-errors/) article.
-
-
-### Manual Install
-
-For a fully manual install, execute the following lines to first clone the `nvm` repository into `$HOME/.nvm`, and then load `nvm`:
-
+### Manual Install & Upgrade
+For a fully manual install, execute the following lines to first clone repository into `$HOME`, and moving file out of the directory & then load it:
 ```sh
-export NVM_DIR="$HOME/.nvm" && (
-  git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
-  cd "$NVM_DIR"
-  git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
-) && \. "$NVM_DIR/nvm.sh"
+git clone https://github.com/webcdn/git-aliases.git "$HOME"
+cd "$HOME"
+mv ./git-aliases/aliases.sh ./.git_aliases
+source ./.git_aliases
 ```
-
-Now add these lines to your `~/.bashrc`, `~/.profile`, or `~/.zshrc` file to have it automatically sourced upon login:
-(you may have to add to more than one of the above files)
-
+Now, add these lines to your `~/.bashrc`, `~/.profile`, or `~/.zshrc` file to have it automatically sourced upon login:
+_(you may have to add to more than one of the above files)_
 ```sh
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-```
-
-### Manual Upgrade
-
-For manual upgrade with `git` (requires git v1.7.10+):
-
-1. change to the `$NVM_DIR`
-1. pull down the latest changes
-1. check out the latest version
-1. activate the new version
-
-```sh
-(
-  cd "$NVM_DIR"
-  git fetch --tags origin
-  git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
-) && \. "$NVM_DIR/nvm.sh"
+[ -s "$HOME/.git_aliases" ] && source "$HOME/.git_aliases"   # This loads git-aliases
 ```
 
 ### Manual Uninstall
-
-To remove `nvm` manually, execute the following:
+To remove `aliases` manually, execute the following:
+```sh
+rm "$HOME/.git_aliases"
+```
+Edit your profile-files `~/.bashrc`, `~/.profile`, or `~/.zshrc` (or other shell resource config) and remove the lines similar to :
 
 ```sh
-$ rm -rf "$NVM_DIR"
+[ -s "$HOME/.git_aliases" ] && source "$HOME/.git_aliases"   # This loads git-aliases
 ```
+----------------------------
+## Aliases
+Arguments are written in square braces `[...]` are optional. `[**]` denotes, you can always use core options/commands from core `git`.
+- `git-ver`
+- `git-ll`
+- `git-it "your commit message"`
+- `git-up ["your commit message" [origin [branch]]] [**]`
+- `git-amend ["your commit message"]`
+- `git-push [origin [branch]] [**]`
+- `git-pushf [origin [branch]] [**]`
+- `git-pullf [origin [branch]]`
+- `git-clean`
+- `git-clear`
+- `git-sync [origin [branch]]`
+- `git-fixit`
+- `git-fixup [origin [branch]] [**]`
+- `git-rebase [**]`
 
-Edit `~/.bashrc` (or other shell resource config) and remove the lines below:
 
+
+### git-ver
+> Prints the **current version** of the git-aliases
 ```sh
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-[[ -r $NVM_DIR/bash_completion ]] && \. $NVM_DIR/bash_completion
+git-ver
+# v1.0-beta
 ```
+
+
+### git-ll
+> Long List of **commit history**, each in single row with proper color for better readability _(latest to oldest order)_
+```sh
+git-ll
+# <comit-id> - <origin-branch> <commit-message> (<commit-time>) [<commit-author>]
+```
+
+
+### git-it
+> add all files to staged list and **commit it**
+```sh
+git-it "your commit message"
+```
+
+
+### git-up
+> Add all files to staged list and commit it. Finally, **push up** to the remote server. You may specify origin & branch at the end.
+```sh
+git-up "your commit message"
+
+git-up "new featured changes" origin beta
+```
+
+
+### git-amend
+> **Modifying your last commit**. This will update commit time, author who is working at the foremost. If you are specifying the commit-message, then it will be updated too. Mostly used for correction purposes. In case of amendments, code must be pushed forcefully otherwise it will throw an error.
+```sh
+git-amend
+
+git-amend "your commit message"
+```
+
+
+### git-push & git-pushf
+> **Push all pending commits to remote cloud**. If pushed with `git-pushf`, commits are **forced** to be pushed.
+```sh
+git-push
+
+# with origin
+git-push new_origin
+
+# with origin & branch
+git-push new_origin slave
+
+# you may also add core git push options at the end
+git-push new_origin staging 
+
+# NOTE: git-pushf options are same as in git-push
+```
+
+
+### git-pullf
+> **Pull changes** from remote cloud, and forcefully reset with your current branch.
+```sh
+git-pullf
+
+# with origin
+git-pullf new_origin
+
+# with origin & branch
+git-pullf new_origin staging
+
+# NOTE: git-pull have no means here
+```
+
+
+### git-clean
+> **Clean garbage** objects from the `.git` directory. It works locally.
+```sh
+git-clean
+```
+
+
+### git-clear
+> **Clear your working space**. This will remove all staged & unstaged files.
+```sh
+git-clear
+```
+
+
+### git-sync
+> **Sync from remote**. This additionally clear all the staged files & then pull the code forcefully
+```sh
+git-sync
+
+# with origin
+git-sync new_origin
+
+# with origin & branch
+git-sync new_origin staging
+```
+
+
+
+### git-sync
+> **Sync from remote**. This additionally clear all the staged files & then pull the code forcefully
+```sh
+git-sync
+
+# with origin
+git-sync new_origin
+
+# with origin & branch
+git-sync new_origin staging
+```
+
+
+### git-fixit
+> **Fixing previous commit**. This will add a new commit with **fixup** tag as prefix to previous commit message. 
+```sh
+# same purpose as git-amend but here this will create a new commit
+git-fixit
+```
+
+### git-fixup
+> **Fixing previous commit & push it**. This will add a fixup commit & push on remote origin. 
+```sh
+# same purpose as git-amend but here this will create a new commit
+git-fixup
+
+# with origin
+git-fixup origin
+
+# with origin & branch
+git-fixup new_origin staging
+```
+
+
+### git-rebase
+> **Automatically Rebase Commits**. This will rebase you commits based on the prefix keywords added till the provided `HEAD`/`HASH`. 
+```sh
+# rebasing till hash
+git-rebase 84c63b39
+git-rebase 84c63b3910bb28b5f0549e235ac0f4f3a3c71a1b
+
+# rebasing last 5 commits
+git-rebase HEAD~5
+
+# rebasing from root
+git-rebase --root
+```
+
+
+## Examples
+#### Example 1
+```sh
+$ git-it
+# c1b8fd544 - oauth added (1 minutes ago) [webcdn]
+
+$ git-fixit
+# 7056e6ef2 - fixup! oauth added (1 minutes ago) [webcdn]
+# c1b8fd544 - oauth added (2 minutes ago) [webcdn]
+
+$ git-fixit
+# d4bc5b9fa - fixup! fixup! oauth added (1 minutes ago) [webcdn]
+# 7056e6ef2 - fixup! oauth added (2 minutes ago) [webcdn]
+# c1b8fd544 - oauth added (2 minutes ago) [webcdn]
+
+
+$ git-rebase HEAD~3
+# e33621e8e - oauth added (a few seconds ago) [webcdn]
+```
+----------------------------
+
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)

@@ -112,7 +112,7 @@ xyz_install_path() {
 }
 
 xyz_latest_version() {
-    xyz_echo "v0.0.1"
+    xyz_echo "v1.0-beta"
 }
 
 xyz_file_name() {
