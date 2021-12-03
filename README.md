@@ -74,8 +74,9 @@ Arguments are written in square braces `[...]` are optional. `[**]` denotes, you
 - `git-amend ["your commit message"]`
 - `git-push [origin [branch]] [**]`
 - `git-pushf [origin [branch]] [**]`
+- `git-pull [origin [branch]] [**]`
 - `git-pullf [origin [branch]]`
-- `git-clean`
+- `git-clean [reflogs]`
 - `git-clear`
 - `git-sync [origin [branch]]`
 - `git-fixit`
@@ -143,6 +144,23 @@ git-push new_origin staging
 ```
 
 
+### git-pull
+> **Pull all pending commits from remote cloud**. This is launched with auto detection.
+```sh
+git-pull
+
+# with origin
+git-pull new_origin
+
+# with origin & branch
+git-pull new_origin slave
+
+# you may also add core git pull options at the end
+git-pull new_origin staging 
+
+```
+
+
 ### git-pullf
 > **Pull changes** from remote cloud, and forcefully reset with your current branch.
 ```sh
@@ -154,12 +172,11 @@ git-pullf new_origin
 # with origin & branch
 git-pullf new_origin staging
 
-# NOTE: git-pull have no means here
 ```
 
 
 ### git-clean
-> **Clean garbage** objects from the `.git` directory. It works locally.
+> **Clean garbage** or unnecessary reflog objects from the `.git` directory. It works locally.
 ```sh
 git-clean
 ```

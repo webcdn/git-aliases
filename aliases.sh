@@ -9,10 +9,24 @@ git_echo() {
     command printf %s\\n "$*" 2>/dev/null
 }
 
+git_exit() {
+    # catch errors, if any
+    if [ $? -ne 0 ]; then
+        echo "::: Exiting to another space, there seems to be an error.";
+    fi
+}
+
 git_detect_remote() {
     if [[ -z "$1" ]]; then
         _ORIGIN="$(git remote)"
-        git_echo "::: Detected Remote: $_ORIGIN"
+        _LENGTH="$(git remote | wc -l)"
+        if [[ _LENGTH -eq 1 ]]; then
+            git_echo "::: Detected Remote: $_ORIGIN"
+        else
+            git_echo "::: Multiple Remotes Detected:"
+            git_echo "$_ORIGIN"
+            exit 1
+        fi
     else
         _ORIGIN="$1"
         git_echo "::: Requested Remote: $_ORIGIN"
@@ -29,31 +43,42 @@ git_detect_remote() {
 
 # aliases
 # ----------------------------------------------------------------------------------
-git-aliases() {
+git-aliases() {( set -e  #fail early
+# <try>
     git_echo "git-aliases is at $(git-ver)"
-}
+# <end>
+) || git_exit; }
 
-git-ver() {
-    git_echo "v1.0-beta"
-}
+git-ver() {( set -e  #fail early
+# <try>
+    git_echo "v1.0.1-beta"
+# <end>
+) || git_exit; }
 
-git-ll() {
+git-ll() {( set -e  #fail early
+# <try>
     git log --abbrev-commit --decorate --pretty=format:"%C(yellow)%h %C(reset)-%C(red)%d %C(reset)%s %C(green)(%ar) %C(blue)[%an]" "$@"
-}
+# <end>
+) || git_exit; }
 
-git-it() {
+git-it() {( set -e  #fail early
+# <try>
     local _MESSAGE="$1"
 
     git add --all
     git commit -m "$_MESSAGE"
-}
+# <end>
+) || git_exit; }
 
-git-up() {
+git-up() {( set -e  #fail early
+# <try>
     git-it "$1"
     git-push "${@:2}"
-}
+# <end>
+) || git_exit; }
 
-git-amend() {
+git-amend() {( set -e  #fail early
+# <try>
     git add --all
   
     if [ -n "$1" ]; then
@@ -62,34 +87,52 @@ git-amend() {
         git commit --amend --reset-author --no-edit;
     fi;
     # in case to modify date: git commit --amend --date="$(date -R)"
-}
+# <end>
+) || git_exit; }
 
-git-push() {
+git-push() {( set -e  #fail early
+# <try>
     if [[ -z "$1" ]]; then local _ORIGIN; fi
     if [[ -z "$2" ]]; then local _BRANCH; fi
     git_detect_remote "${@:1:2}"
 
     git push "${_ORIGIN}" "${_BRANCH}" "${@:3}"
-}
+# <end>
+) || git_exit; }
 
-git-pushf() {
+git-pushf() {( set -e  #fail early
+# <try>
     if [[ -z "$1" ]]; then local _ORIGIN; fi
     if [[ -z "$2" ]]; then local _BRANCH; fi
     git_detect_remote "${@:1:2}"
 
     git push --force "${_ORIGIN}" "${_BRANCH}" "${@:3}"
-}
+# <end>
+) || git_exit; }
 
-git-pullf() {
+git-pull() {( set -e  #fail earlyy
+# <try>
+    if [[ -z "$1" ]]; then local _ORIGIN; fi
+    if [[ -z "$2" ]]; then local _BRANCH; fi
+    git_detect_remote "${@:1:2}"
+
+    git pull "${_ORIGIN}" "${_BRANCH}" "${@:3}"
+# <end>
+) || git_exit; }
+
+git-pullf() {( set -e  #fail early
+# <try>
     if [[ -z "$1" ]]; then local _ORIGIN; fi
     if [[ -z "$2" ]]; then local _BRANCH; fi
     git_detect_remote "${@:1:2}"
 
     git fetch --all
     git reset --hard "$_ORIGIN/$_BRANCH"
-}
+# <end>
+) || git_exit; }
 
-git-sync() {
+git-sync() {( set -e  #fail early
+# <try>
     local _ORIGIN
     local _BRANCH
     git_detect_remote "${@:1:2}"
@@ -103,26 +146,36 @@ git-sync() {
     git_echo
     git_echo "==> Synced with '$_ORIGIN/$_BRANCH'"
     git_echo
-}
+# <end>
+) || git_exit; }
 
-git-clean() {
-    git gc --prune=now --aggressive
+git-clean() {( set -e  #fail early
+# <try>
+    if [ -n "$1" ]; then
+        git reflog expire --expire-unreachable=now --all;
+    else
+        git gc --prune=now --aggressive;
+    fi;
 
     git_echo
     git_echo "==> Git Repository Cleaned"
     git_echo
-}
+# <end>
+) || git_exit; }
 
-git-clear() {
+git-clear() {( set -e  #fail early
+# <try>
     git reset --hard
     git clean -df
 
     git_echo
     git_echo "==> Git Repository Cleared"
     git_echo
-}
+# <end>
+) || git_exit; }
 
-git-fixit() {
+git-fixit() {( set -e  #fail early
+# <try>
     local _HASH="${1:-HEAD}"
 
     # Get a commit ref (long-hash-id)
@@ -130,22 +183,30 @@ git-fixit() {
 
     git add --all
     git commit --no-verify --fixup "$_HASH"
-}
+# <end>
+) || git_exit; }
 
-git-fixup() {
+git-fixup() {( set -e  #fail early
+# <try>
     git-fixit "$1"
     git-push "${@:2}"
-}
+# <end>
+) || git_exit; }
 
-git-rebase() {
+git-rebase() {( set -e  #fail early
+# <try>
     EDITOR=true git rebase --interactive --autosquash --autostash --rebase-merges --no-fork-point "$@"
-}
+# <end>
+) || git_exit; }
+
 
 # miscellaneous
 # ----------------------------------------------------------------------------------
 
-pretty-code() {
+pretty-code() {( set -e  #fail early
+# <try>
     prettier --use-tabs false --tab-width 4 --print-width 1234567890 "$@"
-}
+# <end>
+) || git_exit; }
 
 } # this ensures the entire script is downloaded #
