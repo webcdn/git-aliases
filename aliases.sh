@@ -12,7 +12,7 @@ git_echo() {
 git_exit() {
     # catch errors, if any
     if [ $? -ne 0 ]; then
-        echo "::: Exiting to another space, there seems to be an error.";
+        echo "==> Exiting to another space, there seems to be an error.";
     fi
 }
 
@@ -21,45 +21,49 @@ git_detect_remote() {
         _ORIGIN="$(git remote)"
         _LENGTH="$(git remote | wc -l)"
         if [[ _LENGTH -eq 1 ]]; then
-            git_echo "::: Detected Remote: $_ORIGIN"
+            git_echo "==> Detected Remote: $_ORIGIN"
         else
-            git_echo "::: Multiple Remotes Detected:"
+            git_echo "==> Multiple Remotes Detected:"
             git_echo "$_ORIGIN"
             exit 1
         fi
     else
         _ORIGIN="$1"
-        git_echo "::: Requested Remote: $_ORIGIN"
+        git_echo "==> Requested Remote: $_ORIGIN"
     fi
 
     if [[ -z "$2" ]]; then
         _BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-        git_echo "::: Detected Branch: $_BRANCH"
+        git_echo "==> Detected Branch: $_BRANCH"
     else
         _BRANCH="$2"
-        git_echo "::: Requested Branch: $_BRANCH"
+        git_echo "==> Requested Branch: $_BRANCH"
     fi
 }
 
 # aliases
 # ----------------------------------------------------------------------------------
+
 git-aliases() {( set -e  #fail early
 # <try>
     git_echo "git-aliases is at $(git-ver)"
 # <end>
 ) || git_exit; }
 
+
 git-ver() {( set -e  #fail early
 # <try>
-    git_echo "v1.0.1-beta"
+    git_echo "v1.0.2-beta"
 # <end>
 ) || git_exit; }
+
 
 git-ll() {( set -e  #fail early
 # <try>
     git log --abbrev-commit --decorate --pretty=format:"%C(yellow)%h %C(reset)-%C(red)%d %C(reset)%s %C(green)(%ar) %C(blue)[%an]" "$@"
 # <end>
 ) || git_exit; }
+
 
 git-it() {( set -e  #fail early
 # <try>
@@ -70,12 +74,14 @@ git-it() {( set -e  #fail early
 # <end>
 ) || git_exit; }
 
+
 git-up() {( set -e  #fail early
 # <try>
     git-it "$1"
     git-push "${@:2}"
 # <end>
 ) || git_exit; }
+
 
 git-amend() {( set -e  #fail early
 # <try>
@@ -90,6 +96,7 @@ git-amend() {( set -e  #fail early
 # <end>
 ) || git_exit; }
 
+
 git-push() {( set -e  #fail early
 # <try>
     if [[ -z "$1" ]]; then local _ORIGIN; fi
@@ -99,6 +106,7 @@ git-push() {( set -e  #fail early
     git push "${_ORIGIN}" "${_BRANCH}" "${@:3}"
 # <end>
 ) || git_exit; }
+
 
 git-pushf() {( set -e  #fail early
 # <try>
@@ -110,6 +118,7 @@ git-pushf() {( set -e  #fail early
 # <end>
 ) || git_exit; }
 
+
 git-pull() {( set -e  #fail earlyy
 # <try>
     if [[ -z "$1" ]]; then local _ORIGIN; fi
@@ -119,6 +128,7 @@ git-pull() {( set -e  #fail earlyy
     git pull "${_ORIGIN}" "${_BRANCH}" "${@:3}"
 # <end>
 ) || git_exit; }
+
 
 git-pullf() {( set -e  #fail early
 # <try>
@@ -131,23 +141,26 @@ git-pullf() {( set -e  #fail early
 # <end>
 ) || git_exit; }
 
+
 git-sync() {( set -e  #fail early
 # <try>
-    local _ORIGIN
-    local _BRANCH
+    if [[ -z "$1" ]]; then local _ORIGIN; fi
+    if [[ -z "$2" ]]; then local _BRANCH; fi
     git_detect_remote "${@:1:2}"
 
-    git-clear
+    git stash
+    git fetch --all
     git checkout "$_BRANCH"
-
-    git-pullf "${_ORIGIN}" "${_BRANCH}"
+    git reset --hard "$_ORIGIN/$_BRANCH"
     git remote prune "$_ORIGIN"
+    git stash pop
 
     git_echo
     git_echo "==> Synced with '$_ORIGIN/$_BRANCH'"
     git_echo
 # <end>
 ) || git_exit; }
+
 
 git-clean() {( set -e  #fail early
 # <try>
@@ -163,6 +176,7 @@ git-clean() {( set -e  #fail early
 # <end>
 ) || git_exit; }
 
+
 git-clear() {( set -e  #fail early
 # <try>
     git reset --hard
@@ -173,6 +187,7 @@ git-clear() {( set -e  #fail early
     git_echo
 # <end>
 ) || git_exit; }
+
 
 git-fixit() {( set -e  #fail early
 # <try>
@@ -186,12 +201,14 @@ git-fixit() {( set -e  #fail early
 # <end>
 ) || git_exit; }
 
+
 git-fixup() {( set -e  #fail early
 # <try>
     git-fixit "$1"
     git-push "${@:2}"
 # <end>
 ) || git_exit; }
+
 
 git-rebase() {( set -e  #fail early
 # <try>
@@ -203,10 +220,5 @@ git-rebase() {( set -e  #fail early
 # miscellaneous
 # ----------------------------------------------------------------------------------
 
-pretty-code() {( set -e  #fail early
-# <try>
-    prettier --use-tabs false --tab-width 4 --print-width 1234567890 "$@"
-# <end>
-) || git_exit; }
 
 } # this ensures the entire script is downloaded #

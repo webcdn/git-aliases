@@ -202,20 +202,6 @@ git-sync new_origin staging
 ```
 
 
-
-### git-sync
-> **Sync from remote**. This additionally clear all the staged files & then pull the code forcefully
-```sh
-git-sync
-
-# with origin
-git-sync new_origin
-
-# with origin & branch
-git-sync new_origin staging
-```
-
-
 ### git-fixit
 > **Fixing previous commit**. This will add a new commit with **fixup** tag as prefix to previous commit message. 
 ```sh
